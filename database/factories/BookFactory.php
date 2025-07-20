@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Book;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,7 +25,7 @@ class BookFactory extends Factory
             'description' => $this->faker->text(30),
             'published_year' => $this->faker->year(),
             'image' => $this->faker->imageUrl(),
-            'user_id'=>$this->faker->numberBetween(3,7),
+            'user_id'        => User::factory(),
         ];
     }
 }

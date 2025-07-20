@@ -17,14 +17,11 @@ class BookServiceTest extends TestCase
 
     public function test_create_book_creates_book_and_attaches_authors()
     {
-        // Создание автора и пользователя
         $author = Author::factory()->create();
         $user = User::factory()->create();
 
-        // Установка авторизованного пользователя для auth()->id()
         $this->actingAs($user);
 
-        // DTO для создания книги
         $bookDTO = new BookDTO(
             'New Book',
             'Description of new book',
@@ -34,7 +31,6 @@ class BookServiceTest extends TestCase
             $user->id
         );
 
-        // Сохраняем книгу напрямую через модель, чтобы у неё был ID
         $book = Book::factory()->create([
             'title' => $bookDTO->title,
             'description' => $bookDTO->description,
@@ -43,24 +39,18 @@ class BookServiceTest extends TestCase
             'user_id' => $bookDTO->user_id,
         ]);
 
-        // Мокаем репозиторий
         $bookRepositoryMock = $this->createMock(BookRepository::class);
 
-        // Возвращаем сохранённую книгу
         $bookRepositoryMock->expects($this->once())
             ->method('create')
             ->willReturn($book);
 
-        // Сервис с подставленным мок-репозиторием
         $bookService = new BookService($bookRepositoryMock);
 
-        // Действие
         $createdBook = $bookService->createBook($bookDTO);
 
-        // Проверка: корректно ли создалась книга
         $this->assertEquals('New Book', $createdBook->title);
 
-        // Проверка: были ли привязаны авторы
         $this->assertDatabaseHas('author_book', [
             'book_id' => $createdBook->id,
             'author_id' => $author->id,
